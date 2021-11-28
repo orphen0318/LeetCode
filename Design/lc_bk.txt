@@ -1,0 +1,26 @@
+class Solution {
+
+	class iterator {
+		iterator() {}
+	};
+
+	Solution (istream& is)
+	class iterator;
+	
+	iterator begin();
+	iterator end();
+}
+
+void main() {
+	Solution solution;
+	
+	for (solution::iteator ite = iterator.begin(); ite != iterator.end(); ++ite) {
+	
+
+}
+
+std::get_string
+
+
+透過istream輸入一連串數字, 輸出[xxxx, xxx, xxxx,]的格式
+前綴有" "可以接受, 但是遇到包含其他特殊符號的, 都不可以接受
