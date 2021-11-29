@@ -25,41 +25,47 @@ public:
             typedef input_iterator_tag  iterator_category;
 
             iterator() : _ok(false) {
-                cout << "iterator ctor" << endl;
+                // cout << "iterator ctor" << endl;
             }
             iterator(istream& is) : _iss(&is) {
                 cout << "itrator istream ctor" << endl;
                 read();
             }
 
-            // iterator& operator++() {     // use for ++iterator
-            //     return *this;
-            // }
+            iterator& operator++() {        // use for ++iterator
+                cout << "iterator, operator++" << endl;
+                read();
+                return *this;
+            }
 
-            // iterator operator++(int) {  // use for iterator++
-            //     iterator tmp(*this);
-            //     ++(*this);
-            //     // ++_ptr;
-            //     return tmp;
-            // }
+            iterator operator++(int) {      // use for iterator++
+                cout << "iterator, operator++(int)" << endl;
+                iterator tmp(*this);
+                read();
+                return tmp;
+            }
 
-            // string* operator->() {
-            //     return &str;
-            // }
+            string* operator->() const {
+                return __addressof((operator*()));
+            }
 
             string& operator*() {
-                cout << "iterator, operator*" << endl;
+                // cout << "iterator, operator*" << endl;
                 return str;
             }
 
             bool operator==(const iterator& rhs) {
                 cout << "iterator operator ==" << endl;
-                return (this->_ok == rhs._ok);
+                // return (this->_ok == rhs._ok);
+                // return (this->_ok == rhs._ok) && (!this->_ok || this->_iss == rhs._iss);
+                return (this->_ok == rhs._ok) && (!this->_ok);
             }
 
             bool operator!=(const iterator& rhs) {
                 cout << "iterator operator !=" << endl;
-                return !(this->_ok == rhs._ok);
+                // return !(this->_ok == rhs._ok);
+                // return !( (this->_ok == rhs._ok) && (!this->_ok || this->_iss == rhs._iss));
+                return !( (this->_ok == rhs._ok) && (!this->_ok));
             }
 
         private:
@@ -72,8 +78,14 @@ public:
                 _ok = (_iss && *_iss) ? true : false;
                 if (_ok) {
                     *_iss >> str;
+                    // getline(*_iss, str);
                     _ok = *_iss ? true : false;
-                }
+                } 
+                // if (_iss && !(*_iss >> str))
+                // {
+                //     _iss = 0;
+                //     _ok = false;    
+                // }
             }
     };
 
@@ -84,9 +96,6 @@ public:
     Solution() {
         cout << "Solution ctor" << endl;
     }
-
-    // iterator begin();
-    // iterator end();
 
     iterator begin() {
         cout << "Solution begin" << endl;
@@ -192,9 +201,13 @@ bool is_digit(const string &str) {
     return (!str.empty() && all_of(str.begin(), str.end(), ::isdigit));
 }
 
+bool is_number(const string &str) {
+    return (!str.empty() && (str.find_first_not_of("-+0123456789") == string::npos));
+}
+
 int main(int argc, char** argv) {
 
-    // Solution<istream> solution;
+#if 0
     filebuf buf;
     if(buf.open("test.txt", ios::in) == nullptr) {
         cout << "fail to open file" << endl;
@@ -203,18 +216,61 @@ int main(int argc, char** argv) {
     istream is(&buf);
     Solution<istream> sol(is);
 
-    // Solution<istream>::iterator iter;
-    Solution<istream>::iterator iter = sol.begin(); 
-    Solution<istream>::iterator ed = sol.end();
+    istream &iis(cin);
+    Solution<istream> sol2(iis);
 
-    cout << "test3" << endl;
+    // Solution<istream>::iterator iter = sol2.begin(); 
+    // Solution<istream>::iterator ed = sol2.end();
+    vector<int> res;
 
-    if (iter != ed) {
-        string str = *iter;
-        cout << str << endl;
-    } else {
-        cout << "iter == ed" << endl;
+    cout << "test5" << endl;
+
+    // if (iter != ed) {
+    //     string str = *iter;
+    //     cout << str << endl;
+    //     ++iter;
+    //     string str2 = *iter;
+    //     cout << str2 << endl;
+    //     iter++;
+    //     string str3 = *iter;
+    //     cout << str3 << endl;
+    // } else {
+    //     cout << "iter == ed" << endl;
+    // }
+
+    // string ss;
+    // while (iter != ed) {
+    //     ss = *iter;
+    //     cout << ss << endl;
+    //     ++iter;
+    // }
+
+    for (Solution<istream>::iterator beg = sol2.begin(); beg != sol2.end(); ++beg) {
+        cout << *beg << endl;
+        // if (is_number(*beg)) {
+        //     res.push_back(stoi(*beg));
+        // }
     }
+
+    // cout << "finish!" << endl;
+
+    // for (auto &num : res) {
+    //     cout << num << endl;
+    // }
+#endif
+    // string str1, str2;
+    // cout << "inser two strings: ";
+
+    // istream_iterator<string> iit(cin);
+    // istream_iterator<string> eos;
+
+    // if (iit != eos)
+    //     str1 = *iit;
+    // ++iit;
+    // if (iit != eos)
+    //     str2 = *iit;
+
+    // cout << "str1: " << str1 << ", str2: " << str2 << endl;
 
 // test for how to use istream 
 #if 0
@@ -244,7 +300,8 @@ int main(int argc, char** argv) {
         getline(is, str3);
         cout << "str3: " << str3 << endl;
         
-        if (is_digit(str3))
+        // if (is_digit(str3))
+        if (is_number(str3))
             cout << "nums: " << stoi(str3) << endl;
     }
 #endif
