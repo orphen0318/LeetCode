@@ -4,12 +4,15 @@
 #include <algorithm>
 #include <iterator>
 #include <cassert>
+#include <string>
 
 using namespace std;
 
 #if 1
 // ref: https://blog.csdn.net/li1615882553/article/details/83716065
-        https://www.jianshu.com/p/4931d461466f
+//        https://www.jianshu.com/p/4931d461466f
+// istream_iterator source code: https://code.woboq.org/gcc/include/c++/7.2.1/bits/stream_iterator.h.html#std::istream_iterator::_M_stream
+//                               https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/bits/stream_iterator.h
 template <typename T>
 class Solution {
 public:
@@ -21,11 +24,12 @@ public:
             typedef int                 difference_type;
             typedef input_iterator_tag  iterator_category;
 
-            iterator() : end_marker(false) {
+            iterator() : _ok(false) {
                 cout << "iterator ctor" << endl;
             }
             iterator(istream& is) : _iss(&is) {
                 cout << "itrator istream ctor" << endl;
+                read();
             }
 
             // iterator& operator++() {     // use for ++iterator
@@ -43,14 +47,34 @@ public:
             //     return &str;
             // }
 
-            // string& operator*() {
-            //     return str;
-            // }
+            string& operator*() {
+                cout << "iterator, operator*" << endl;
+                return str;
+            }
+
+            bool operator==(const iterator& rhs) {
+                cout << "iterator operator ==" << endl;
+                return (this->_ok == rhs._ok);
+            }
+
+            bool operator!=(const iterator& rhs) {
+                cout << "iterator operator !=" << endl;
+                return !(this->_ok == rhs._ok);
+            }
 
         private:
             istream* _iss;
             string str;
-            bool end_marker;
+            bool _ok;
+
+            void read() {
+                cout << "iterator, read()" << endl;
+                _ok = (_iss && *_iss) ? true : false;
+                if (_ok) {
+                    *_iss >> str;
+                    _ok = *_iss ? true : false;
+                }
+            }
     };
 
     Solution(istream& is) : _is(&is) {
@@ -183,6 +207,15 @@ int main(int argc, char** argv) {
     Solution<istream>::iterator iter = sol.begin(); 
     Solution<istream>::iterator ed = sol.end();
 
+    cout << "test3" << endl;
+
+    if (iter != ed) {
+        string str = *iter;
+        cout << str << endl;
+    } else {
+        cout << "iter == ed" << endl;
+    }
+
 // test for how to use istream 
 #if 0
     filebuf buf;
@@ -223,15 +256,15 @@ int main(int argc, char** argv) {
     farray[1] = 4.7;
     farray[2] = 8;
     
-    fixed_array<double>::iterator ite;
+    // fixed_array<double>::iterator ite;
     // fixed_array<double>::iterator ite = farray.begin();
     // cout << *(++ite) << endl;
     // ite++;
     // cout << *ite << endl;
 
-    // for (fixed_array<double>::iterator iter = farray.begin(); iter != farray.end(); ++iter) {
+    for (fixed_array<double>::iterator iter = farray.begin(); iter != farray.end(); ++iter) {
     //     cout << *iter << endl;
-    // }
+    }
     
     cout << endl;
 #endif
