@@ -33,7 +33,7 @@ public:
             }
 
             iterator& operator++() {        // use for ++iterator
-                cout << "iterator, operator++" << endl;
+                // cout << "iterator, operator++" << endl;
                 read();
                 return *this;
             }
@@ -74,11 +74,12 @@ public:
             bool _ok;
 
             void read() {
-                cout << "iterator, read()" << endl;
+                // cout << "iterator, read()" << endl;
                 _ok = (_iss && *_iss) ? true : false;
                 if (_ok) {
-                    *_iss >> str;
-                    // getline(*_iss, str);
+                    *_iss >> str;    // 遇到'\n'停止且忽略前綴空白及空白行
+                    // getline(*_iss, str);    // 預設遇到'\n'停止, 不會忽略前綴空白及空白行
+                    // getline(*_iss, str, ' ');   // 遇到空白停止
                     _ok = *_iss ? true : false;
                 } 
                 // if (_iss && !(*_iss >> str))
@@ -103,12 +104,120 @@ public:
     }
 
     iterator end() {
-        cout << "Solution end" << endl;
+        // cout << "Solution end" << endl;
         return iterator();
     }
 
 private:
     istream* _is;
+};
+#endif
+
+#if 1
+template <typename T, typename _CharT = char,
+           typename _Traits = char_traits<_CharT>>
+class Solution2 {
+public:
+    class iterator {
+        public:
+            typedef string              value_type;
+            typedef string*             pointer;
+            typedef string&             reference;
+            typedef int                 difference_type;
+            typedef input_iterator_tag  iterator_category;
+
+            typedef _CharT                         char_type;
+            typedef _Traits                        traits_type;
+            typedef basic_istream<_CharT, _Traits> istream_type;
+
+            iterator() : _ok(false) {
+                // cout << "iterator ctor" << endl;
+            }
+            iterator(istream_type& is) : _iss(&is) {
+                cout << "itrator istream ctor" << endl;
+                read();
+            }
+
+            iterator& operator++() {        // use for ++iterator
+                // cout << "iterator, operator++" << endl;
+                read();
+                return *this;
+            }
+
+            iterator operator++(int) {      // use for iterator++
+                cout << "iterator, operator++(int)" << endl;
+                iterator tmp(*this);
+                read();
+                return tmp;
+            }
+
+            string* operator->() const {
+                return __addressof((operator*()));
+            }
+
+            string& operator*() {
+                // cout << "iterator, operator*" << endl;
+                return str;
+            }
+
+            bool operator==(const iterator& rhs) {
+                cout << "iterator operator ==" << endl;
+                // return (this->_ok == rhs._ok);
+                // return (this->_ok == rhs._ok) && (!this->_ok || this->_iss == rhs._iss);
+                return (this->_ok == rhs._ok) && (!this->_ok);
+            }
+
+            bool operator!=(const iterator& rhs) {
+                cout << "iterator operator !=" << endl;
+                // return !(this->_ok == rhs._ok);
+                // return !( (this->_ok == rhs._ok) && (!this->_ok || this->_iss == rhs._iss));
+                return !( (this->_ok == rhs._ok) && (!this->_ok));
+            }
+
+        private:
+            istream_type* _iss;
+            string str;
+            bool _ok;
+
+            void read() {
+                // cout << "iterator, read()" << endl;
+                _ok = (_iss && *_iss) ? true : false;
+                if (_ok) {
+                    *_iss >> str;    // 遇到'\n'停止且忽略前綴空白及空白行
+                    // getline(*_iss, str);    // 預設遇到'\n'停止, 不會忽略前綴空白及空白行
+                    // getline(*_iss, str, ' ');   // 遇到空白停止
+                    _ok = *_iss ? true : false;
+                } 
+                // if (_iss && !(*_iss >> str))
+                // {
+                //     _iss = 0;
+                //     _ok = false;    
+                // }
+            }
+    };
+
+    typedef basic_istream<_CharT, _Traits> istream_type;
+
+    Solution2(istream_type& is) : _is(&is) {
+        cout << "Solution2 istream ctor" << endl;
+    }
+
+    Solution2() {
+        cout << "Solution2 ctor" << endl;
+    }
+
+    iterator begin() {
+        cout << "Solution2 begin" << endl;
+        return iterator(*_is);
+    }
+
+    iterator end() {
+        // cout << "Solution end" << endl;
+        return iterator();
+    }
+
+private:
+    istream_type* _is;
 };
 #endif
 
@@ -207,23 +316,39 @@ bool is_number(const string &str) {
 
 int main(int argc, char** argv) {
 
-#if 0
-    filebuf buf;
-    if(buf.open("test.txt", ios::in) == nullptr) {
-        cout << "fail to open file" << endl;
-        return 0;
-    }
-    istream is(&buf);
-    Solution<istream> sol(is);
+#if 1
+    // filebuf buf;
+    // if(buf.open("test.txt", ios::in) == nullptr) {
+    //     cout << "fail to open file" << endl;
+    //     return 0;
+    // }
+    // istream is(&buf);
+    // Solution<istream> sol(is);
 
-    istream &iis(cin);
-    Solution<istream> sol2(iis);
+    // istream &iis(cin);
+    // Solution<istream> sol2(iis);
 
-    // Solution<istream>::iterator iter = sol2.begin(); 
-    // Solution<istream>::iterator ed = sol2.end();
+    // -----  test Solution 2 -----------------------
+    ifstream ifs;
+    ifs.open("test.txt", ios::in);
+    Solution2<istream> sol_if(ifs);
+
+    // filebuf buf;
+    // if(buf.open("test.txt", ios::in) == nullptr) {
+    //     cout << "fail to open file" << endl;
+    //     return 0;
+    // }
+    // istream is(&buf);
+    // Solution2<istream> sol_if(is);
+
+    // Solution2<istream> sol_if(cin);
+    // ----------------------------------------------
+
+    // Solution<istream>::iterator iter = sol.begin(); 
+    // Solution<istream>::iterator ed = sol.end();
     vector<int> res;
 
-    cout << "test5" << endl;
+    cout << "test6" << endl;
 
     // if (iter != ed) {
     //     string str = *iter;
@@ -245,14 +370,15 @@ int main(int argc, char** argv) {
     //     ++iter;
     // }
 
-    for (Solution<istream>::iterator beg = sol2.begin(); beg != sol2.end(); ++beg) {
+    for (Solution2<istream>::iterator beg = sol_if.begin(); beg != sol_if.end(); ++beg) {
+    // for (Solution<istream>::iterator beg = sol.begin(); beg != sol.end(); ++beg) {
         cout << *beg << endl;
         // if (is_number(*beg)) {
         //     res.push_back(stoi(*beg));
         // }
     }
 
-    // cout << "finish!" << endl;
+    cout << "finish!" << endl;
 
     // for (auto &num : res) {
     //     cout << num << endl;
